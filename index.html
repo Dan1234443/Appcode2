@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dan-Herete & Brothers</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background: #0a0a0a;
+    color: #fff;
+}
+
+/* NAVBAR */
+header {
+    position: fixed;
+    width: 100%;
+    padding: 20px 80px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(10,10,10,0.6);
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+}
+
+nav a {
+    margin-left: 30px;
+    color: #aaa;
+    text-decoration: none;
+}
+
+nav a:hover { color: #fff; }
+
+/* HERO */
+.hero {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+    text-align: center;
+    position: relative;
+}
+
+.sliding-text {
+    position: absolute;
+    top: 40%;
+    white-space: nowrap;
+    font-size: 40px;
+    color: rgba(255,255,255,0.08);
+    animation: slide 12s linear infinite;
+}
+
+@keyframes slide {
+    from { transform: translateX(100%); }
+    to { transform: translateX(-100%); }
+}
+
+/* PRODUCTS */
+.products {
+    padding: 100px 80px;
+    text-align: center;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(250px,1fr));
+    gap: 30px;
+}
+
+.card {
+    background: rgba(255,255,255,0.05);
+    padding: 20px;
+    border-radius: 20px;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 0 20px #00c6ff;
+}
+
+.card img {
+    width: 100%;
+    border-radius: 15px;
+}
+
+/* CART */
+.cart-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #00c6ff;
+    padding: 15px;
+    border-radius: 50px;
+    cursor: pointer;
+}
+
+.cart-panel {
+    position: fixed;
+    right: -300px;
+    top: 0;
+    width: 300px;
+    height: 100%;
+    background: #111;
+    padding: 20px;
+    transition: 0.3s;
+}
+
+.cart-panel.active { right: 0; }
+
+</style>
+</head>
+
+<body>
+
+<header>
+    <h2>Dan-Herete & Brothers</h2>
+    <nav>
+        <a href="/" onclick="route('/');return false;">Home</a>
+        <a href="/products" onclick="route('/products');return false;">Products</a>
+        <a href="/contact" onclick="route('/contact');return false;">Contact</a>
+    </nav>
+</header>
+
+<section class="hero">
+    <div>
+        <h1>Welcome to the Future</h1>
+        <p>Premium gadgets & innovation</p>
+    </div>
+
+    <div class="sliding-text">
+        WELCOME TO DAN-HERETE STORE • FUTURE TECH • PREMIUM EXPERIENCE •
+    </div>
+</section>
+
+<section class="products">
+    <h2>Products</h2>
+    <div class="grid">
+
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9">
+            <h3>Smart Device</h3>
+            <button onclick="addToCart('Smart Device')">Buy</button>
+        </div>
+
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8">
+            <h3>Laptop</h3>
+            <button onclick="addToCart('Laptop')">Buy</button>
+        </div>
+
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1587202372775-e229f172b9d7">
+            <h3>VR Headset</h3>
+            <button onclick="addToCart('VR Headset')">Buy</button>
+        </div>
+
+    </div>
+</section>
+
+<div class="cart-btn" onclick="toggleCart()">
+🛒 (<span id="count">0</span>)
+</div>
+
+<div class="cart-panel" id="cart">
+    <h2>Cart</h2>
+    <ul id="items"></ul>
+</div>
+
+<script>
+// ROUTER
+function route(path){
+    history.pushState({}, "", path);
+    render(path);
+}
+
+window.onpopstate = () => render(location.pathname);
+
+// RENDER
+function render(path){
+    const hero = document.querySelector(".hero");
+    const products = document.querySelector(".products");
+
+    const old = document.getElementById("contact");
+    if(old) old.remove();
+
+    if(path === "/products"){
+        hero.style.display="none";
+        products.style.display="block";
+
+    } else if(path === "/contact"){
+        hero.style.display="none";
+        products.style.display="none";
+
+        const c = document.createElement("div");
+        c.id="contact";
+        c.style="padding:100px;text-align:center;";
+        c.innerHTML=`
+            <h2>Contact</h2>
+            <p>danheret@gmail.com</p>
+            <p>+1 (437) 000-0000</p>
+            <button onclick="route('/')">Home</button>
+        `;
+        document.body.appendChild(c);
+
+    } else {
+        hero.style.display="flex";
+        products.style.display="block";
+    }
+}
+
+// CART
+let cart=[];
+
+function addToCart(p){
+    cart.push(p);
+    document.getElementById("count").innerText=cart.length;
+
+    let li=document.createElement("li");
+    li.innerText=p;
+    document.getElementById("items").appendChild(li);
+}
+
+function toggleCart(){
+    document.getElementById("cart").classList.toggle("active");
+}
+
+// INIT
+render(location.pathname);
+</script>
+
+</body>
+</html>
